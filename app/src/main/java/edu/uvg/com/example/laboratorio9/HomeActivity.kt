@@ -1,5 +1,6 @@
 package edu.uvg.com.example.laboratorio9
 
+import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
@@ -7,9 +8,11 @@ import android.widget.TextView
 import com.google.firebase.auth.FirebaseAuth
 
 enum class ProviderType {
-    BASIC
+    BASIC,
+    GOOGLE
 }
 
+@Suppress("DEPRECATION")
 class HomeActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -20,7 +23,15 @@ class HomeActivity : AppCompatActivity() {
         val email = bundle?.getString("email")
         val provider = bundle?.getString("provider")
         setup(email ?: "", provider ?: "")
+
+        // Guardado de datos
+        val prefs = getSharedPreferences(getString(R.string.prefs_file), Context.MODE_PRIVATE)
+        prefs.putString("email", email)
+        prefs.putString("provider", provider)
+        prefs.apply()
     }
+
+
 
     /**
      * Función para salir de la sesión
@@ -39,6 +50,11 @@ class HomeActivity : AppCompatActivity() {
         emailTextView.text = email
         providerTextView.text = provider
         logOutButton.setOnClickListener {
+
+            //Borrado de datos
+            val prefs = getSharedPreferences(getString(R.string.prefs_file), Context.MODE_PRIVATE)
+            prefs.clear()
+            prefs.apply()
             FirebaseAuth.getInstance().signOut()
             onBackPressed()
         }

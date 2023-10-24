@@ -8,6 +8,7 @@
     tools:context=".AuthActivity">
 
     <LinearLayout
+        android:id="@+id/authLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -25,7 +26,7 @@
             android:ems="10"
             android:hint="Email"
             android:inputType="textEmailAddress"
-            android:textColor="@android:color/black"/>
+            android:textColor="@android:color/black" />
 
         <Space
             android:layout_width="match_parent"
@@ -39,7 +40,7 @@
 
             android:hint="Contraseña"
             android:inputType="textPassword"
-            android:textColor="@android:color/black"/>
+            android:textColor="@android:color/black" />
 
         <Space
             android:layout_width="match_parent"
@@ -73,5 +74,21 @@
                 android:textColor="@android:color/black" />
 
         </LinearLayout>
+
+        <Space
+            android:layout_width="wrap_content"
+            android:layout_height="4dp"
+            android:layout_weight="1" />
+
+        <Button
+            android:id="@+id/googleButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/white"
+            android:drawableStart="@drawable/icon_google"
+            android:paddingStart="16dp"
+            android:text="Google"
+            android:textAlignment="textStart"
+            android:textColor="@color/colorPrimaryDark" />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
