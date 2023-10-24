@@ -171,19 +171,25 @@ class AuthActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == GOOGLE_SIGN_IN) {
             val task = GoogleSignIn.getSignedInAccountFromIntent(data)
-            val account = task.getResult(ApiException::class.java)
 
-            if (account != null) {
-                val credential = GoogleAuthProvider.getCredential(account.idToken, null)
-                FirebaseAuth.getInstance().signInWithCredential(credential)
+            try {
+                val account = task.getResult(ApiException::class.java)
 
-                if (it.isSuccessful) {
-                    showHome(account.email?:"", ProviderType.GOOGLE)
+                if (account != null) {
+                    val credential = GoogleAuthProvider.getCredential(account.idToken, null)
+                    FirebaseAuth.getInstance().signInWithCredential(credential)
 
-                } else {
-                    showAlert()
+                    if (it.isSuccessful) {
+                        showHome(account.email?:"", ProviderType.GOOGLE)
+
+                    } else {
+                        showAlert()
+                    }
+
                 }
+            } catch(e.ApiException){
 
+                showAlert()
             }
 
         }
