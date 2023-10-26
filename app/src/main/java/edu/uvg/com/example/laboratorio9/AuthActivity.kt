@@ -9,6 +9,7 @@ import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -73,28 +74,28 @@ class AuthActivity : AppCompatActivity() {
         val passwordEditText = findViewById<EditText>(R.id.passwordEditText)
         val googleButton = findViewById<Button>(R.id.googleButton)
         // Al registrar
+        // Al registrar
         signUpButton.setOnClickListener {
+            val email = emailEditText.text.toString()
+            val password = passwordEditText.text.toString()
 
-            // Validar que hay una contraseña o email
-            if (emailEditText.text.isNotEmpty() && passwordEditText.text.isNotEmpty()) {
+            // Verificar que el correo y la contraseña cumplan con los requisitos
+            if (email.isNotEmpty() && password.length >= 6) {
                 // Autenticar el usuario
-                FirebaseAuth.getInstance().createUserWithEmailAndPassword(
-                    emailEditText.text.toString(),
-                    passwordEditText.text.toString()
-                    // notificación de que ha sido existoso
-                ).addOnCompleteListener {
-                    if (it.isSuccessful) {
-                        showHome(it.result?.user?.email ?: "", ProviderType.BASIC)
-
-
-                    } else {
-                        showAlert()
-                        Log.e(
-                            "ERROR AUTENTICACION",
-                            "Estoy en Registro, tengo email {${emailEditText.text} y password {${passwordEditText.text}}}"
-                        )
+                FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
+                    .addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            // Registro exitoso
+                            showHome(task.result?.user?.email ?: "", ProviderType.BASIC)
+                        } else {
+                            showAlert()
+                        }
                     }
-                }
+            } else {
+                // La contraseña es demasiado corta
+                // Muestra un mensaje de error o realiza una acción adecuada
+                // Por ejemplo, mostrar un Toast con un mensaje de error
+                Toast.makeText(this, "La contraseña debe tener al menos 6 caracteres.", Toast.LENGTH_SHORT).show()
             }
         }
 
