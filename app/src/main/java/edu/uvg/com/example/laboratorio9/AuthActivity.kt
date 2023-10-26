@@ -40,6 +40,13 @@ class AuthActivity : AppCompatActivity() {
 
     }
 
+
+    override fun onStart() {
+        super.onStart()
+        val authLayout = findViewById<LinearLayout>(R.id.authLayout)
+        authLayout.visibility = View.VISIBLE
+    }
+
     private fun session() {
 
         val prefs = getSharedPreferences(getString(R.string.prefs_file), Context.MODE_PRIVATE)
@@ -47,7 +54,7 @@ class AuthActivity : AppCompatActivity() {
         val provider = prefs.getString("provider", null)
         val authLayout = findViewById<LinearLayout>(R.id.authLayout)
         if (email != null && provider != null) {
-            authLayout.visibility = View.VISIBLE
+            authLayout.visibility = View.INVISIBLE
             showHome(email, ProviderType.valueOf(provider))
         }
 
@@ -118,13 +125,15 @@ class AuthActivity : AppCompatActivity() {
             }
         }
 
-
+        // Login Google
         googleButton.setOnClickListener {
             //Configuración
             val googleConf = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.prefs_file)).requestEmail().build()
 
             val googleClient = GoogleSignIn.getClient(this, googleConf)
+            googleClient.signOut()
+
             startActivityForResult(googleClient.signInIntent, GOOGLE_SIGN_IN)
 
 
@@ -177,14 +186,14 @@ class AuthActivity : AppCompatActivity() {
                     FirebaseAuth.getInstance().signInWithCredential(credential)
 
                     if (FirebaseAuth.getInstance().signInWithCredential(credential).isSuccessful) {
-                        showHome(account.email?:"", ProviderType.GOOGLE)
+                        showHome(account.email ?: "", ProviderType.GOOGLE)
 
                     } else {
                         showAlert()
                     }
 
                 }
-            } catch(e: ApiException){
+            } catch (e: ApiException) {
 
                 showAlert()
             }
