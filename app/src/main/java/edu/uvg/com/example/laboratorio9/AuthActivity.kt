@@ -8,15 +8,14 @@ import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
+import android.widget.LinearLayout
 import androidx.appcompat.app.AlertDialog
-import androidx.constraintlayout.widget.ConstraintSet
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.GoogleAuthCredential
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.ktx.Firebase
 
@@ -46,9 +45,7 @@ class AuthActivity : AppCompatActivity() {
         val prefs = getSharedPreferences(getString(R.string.prefs_file), Context.MODE_PRIVATE)
         val email = prefs.getString("email", null)
         val provider = prefs.getString("provider", null)
-        val authLayout = findViewById<ConstraintSet.Layout>(R.id.authLayout)
-
-
+        val authLayout = findViewById<LinearLayout>(R.id.authLayout)
         if (email != null && provider != null) {
             authLayout.visibility = View.VISIBLE
             showHome(email, ProviderType.valueOf(provider))
@@ -123,9 +120,9 @@ class AuthActivity : AppCompatActivity() {
 
 
         googleButton.setOnClickListener {
-
+            //Configuración
             val googleConf = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id)).requestEmail().build()
+                .requestIdToken(getString(R.string.prefs_file)).requestEmail().build()
 
             val googleClient = GoogleSignIn.getClient(this, googleConf)
             startActivityForResult(googleClient.signInIntent, GOOGLE_SIGN_IN)
@@ -179,7 +176,7 @@ class AuthActivity : AppCompatActivity() {
                     val credential = GoogleAuthProvider.getCredential(account.idToken, null)
                     FirebaseAuth.getInstance().signInWithCredential(credential)
 
-                    if (it.isSuccessful) {
+                    if (FirebaseAuth.getInstance().signInWithCredential(credential).isSuccessful) {
                         showHome(account.email?:"", ProviderType.GOOGLE)
 
                     } else {
@@ -187,7 +184,7 @@ class AuthActivity : AppCompatActivity() {
                     }
 
                 }
-            } catch(e.ApiException){
+            } catch(e: ApiException){
 
                 showAlert()
             }
