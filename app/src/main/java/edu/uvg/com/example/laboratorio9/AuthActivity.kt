@@ -95,7 +95,11 @@ class AuthActivity : AppCompatActivity() {
                 // La contraseña es demasiado corta
                 // Muestra un mensaje de error o realiza una acción adecuada
                 // Por ejemplo, mostrar un Toast con un mensaje de error
-                Toast.makeText(this, "La contraseña debe tener al menos 6 caracteres.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this,
+                    "La contraseña debe tener al menos 6 caracteres.",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
 
@@ -130,10 +134,12 @@ class AuthActivity : AppCompatActivity() {
         googleButton.setOnClickListener {
             //Configuración
             val googleConf = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.prefs_file)).requestEmail().build()
+                .requestIdToken(getString(R.string.default_web_client_id)).requestEmail().build()
 
             val googleClient = GoogleSignIn.getClient(this, googleConf)
             googleClient.signOut()
+
+            Log.e("MI_TAG", "GoogleConfig = {${googleConf}} y GoogleClient = {${googleClient}}")
 
             startActivityForResult(googleClient.signInIntent, GOOGLE_SIGN_IN)
 
@@ -176,29 +182,30 @@ class AuthActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == GOOGLE_SIGN_IN) {
-            val task = GoogleSignIn.getSignedInAccountFromIntent(data)
 
-            try {
-                val account = task.getResult(ApiException::class.java)
+        // Request = 10
+        Log.e("MI_TAG", "Respuesta = {${requestCode}}")
+        val task = GoogleSignIn.getSignedInAccountFromIntent(data)
 
-                if (account != null) {
-                    val credential = GoogleAuthProvider.getCredential(account.idToken, null)
-                    FirebaseAuth.getInstance().signInWithCredential(credential)
 
-                    if (FirebaseAuth.getInstance().signInWithCredential(credential).isSuccessful) {
-                        showHome(account.email ?: "", ProviderType.GOOGLE)
+        try {
+            val account = task.getResult(ApiException::class.java)
 
-                    } else {
-                        showAlert()
+
+
+            if (account != null) {
+                val credential = GoogleAuthProvider.getCredential(account.idToken, null)
+                FirebaseAuth.getInstance().signInWithCredential(credential)
+                    .addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            showHome(account.email ?: "", ProviderType.GOOGLE)
+                        } else {
+                            showAlert()
+                        }
                     }
-
-                }
-            } catch (e: ApiException) {
-
-                showAlert()
             }
-
+        } catch (e: ApiException) {
+            showAlert()
         }
     }
 

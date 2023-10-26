@@ -3,4 +3,5 @@
     <string name="prefs_file">edu.uvg.com.example.laboratorio9.PREFERENCE_FILE_KEY</string>
     <string name="error">Error en la autenticación</string>
     <string name="accept">Autenticación con éxito</string>
+    <string name="default_web_client_id">1098751175830-v6g6j66de0lbkpdri7f3kuspk6dfsqd1.apps.googleusercontent.com</string>
 </resources>
